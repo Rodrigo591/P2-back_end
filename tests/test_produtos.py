@@ -1,41 +1,132 @@
 import pytest
 
+
 def test_lista_vazia(client):
-    assert client.get("/produtos").status_code == 200
+    response = client.get("/produtos")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
 
 def test_criar_produto(client):
-    r = client.post("/produtos", json={"nome":"Mouse","preco":10})
-    assert r.status_code == 201
+    response = client.post(
+        "/produtos",
+        json={
+            "nome": "Mouse",
+            "preco": 10
+        }
+    )
 
-def test_listagem(client):
-    client.post("/produtos", json={"nome":"Mouse","preco":10})
-    assert len(client.get("/produtos").json()) == 1
+    assert response.status_code == 201
 
-def test_buscar_por_id(client):
-    p = client.post("/produtos", json={"nome":"Mouse","preco":10}).json()
-    assert client.get(f"/produtos/{p['id']}").status_code == 200
+
+def test_listagem(client, produto_existente):
+    response = client.get("/produtos")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+
+
+def test_buscar_por_id(client, produto_existente):
+    response = client.get(
+        f"/produtos/{produto_existente['id']}"
+    )
+
+    assert response.status_code == 200
+    assert response.json()["id"] == produto_existente["id"]
+
 
 def test_buscar_inexistente(client):
-    assert client.get("/produtos/999").status_code == 404
+    response = client.get("/produtos/999")
 
-def test_deletar(client):
-    p = client.post("/produtos", json={"nome":"Mouse","preco":10}).json()
-    assert client.delete(f"/produtos/{p['id']}").status_code == 204
+    assert response.status_code == 404
 
-def test_deletar_confirmar(client):
-    p = client.post("/produtos", json={"nome":"Mouse","preco":10}).json()
-    client.delete(f"/produtos/{p['id']}")
-    assert client.get(f"/produtos/{p['id']}").status_code == 404
+
+def test_deletar(client, produto_existente):
+    response = client.delete(
+        f"/produtos/{produto_existente['id']}"
+    )
+
+    assert response.status_code == 204
+
+
+def test_deletar_confirmar(client, produto_existente):
+    client.delete(
+        f"/produtos/{produto_existente['id']}"
+    )
+
+    response = client.get(
+        f"/produtos/{produto_existente['id']}"
+    )
+
+    assert response.status_code == 404
+
 
 def test_deletar_inexistente(client):
-    assert client.delete("/produtos/999").status_code == 404
+    response = client.delete("/produtos/999")
 
-@pytest.mark.parametrize("payload",[
-    {"nome":"","preco":10},
-    {"nome":"x","preco":0},
-])
-def test_payload_invalido(client,payload):
-    assert client.post("/produtos", json=payload).status_code == 422
+    assert response.status_code == 404
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "nome": "",
+            "preco": 10
+        },
+        {
+            "nome": "Produto",
+            "preco": 0
+        }
+    ]
+)
+def test_payload_invalido(client, payload):
+    response = client.post(
+        "/produtos",
+        json=payload
+    )
+
+    assert response.status_code == 422
+
 
 def test_isolamento(client):
-    assert isinstance(client.get("/produtos").json(), list)
+    response = client.get("/produtos")
+
+    assert isinstance(response.json(), list)
+
+
+def test_atualizar_produto(
+    client,
+    produto_existente
+):
+    response = client.put(
+        f"/produtos/{produto_existente['id']}",
+        json={
+            "nome": "Mouse Gamer",
+            "preco": 300,
+            "estoque": 20,
+            "ativo": True
+        }
+    )
+
+    assert response.status_code == 200
+
+    dados = response.json()
+
+    assert dados["nome"] == "Mouse Gamer"
+    assert dados["preco"] == 300
+
+
+def test_atualizar_produto_inexistente(client):
+    response = client.put(
+        "/produtos/999",
+        json={
+            "nome": "Teste",
+            "preco": 100,
+            "estoque": 1,
+            "ativo": True
+        }
+    )
+
+    assert response.status_code == 404
