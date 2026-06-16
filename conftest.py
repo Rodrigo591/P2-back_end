@@ -30,3 +30,18 @@ def client():
 
     app.dependency_overrides.clear()
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture
+def produto_existente(client):
+    response = client.post(
+        "/produtos",
+        json={
+            "nome": "Teclado",
+            "preco": 150.0,
+            "estoque": 10,
+            "ativo": True
+        }
+    )
+
+    return response.json()
