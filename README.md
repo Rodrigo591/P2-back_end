@@ -25,7 +25,7 @@ Além disso, o projeto demonstra:
 
 ## Tecnologias Utilizadas
 
-* Python 3.12
+* Python 3.13
 * FastAPI
 * SQLAlchemy
 * PostgreSQL
@@ -50,7 +50,7 @@ Além disso, o projeto demonstra:
 ├── .env
 ├── README.md
 └── tests
-    ├──__init__.py
+    ├── __init__.py
     └── test_produtos.py
 ```
 
