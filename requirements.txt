@@ -1,7 +1,7 @@
+python-dotenv
 fastapi
 uvicorn
 sqlalchemy
 psycopg2-binary
 pytest
 httpx
-python-dotenv
