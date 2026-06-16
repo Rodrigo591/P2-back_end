@@ -45,6 +45,9 @@ def get_db():
 def listar(db: Session = Depends(get_db)):
     return db.query(Produto).all()
 
+
+
+
 @app.post("/produtos", response_model=ProdutoOut, status_code=status.HTTP_201_CREATED)
 def criar(produto: ProdutoCreate, db: Session = Depends(get_db)):
     novo = Produto(**produto.model_dump())
@@ -67,3 +70,29 @@ def deletar(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Produto não encontrado")
     db.delete(produto)
     db.commit()
+
+@app.put("/produtos/{id}", response_model=ProdutoOut)
+def atualizar(
+    id: int,
+    dados: ProdutoCreate,
+    db: Session = Depends(get_db)
+):
+    produto = db.query(Produto).filter(
+        Produto.id == id
+    ).first()
+
+    if not produto:
+        raise HTTPException(
+            status_code=404,
+            detail="Produto não encontrado"
+        )
+
+    produto.nome = dados.nome
+    produto.preco = dados.preco
+    produto.estoque = dados.estoque
+    produto.ativo = dados.ativo
+
+    db.commit()
+    db.refresh(produto)
+
+    return produto
