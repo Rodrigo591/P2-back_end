@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 import os
+from dotenv import load_dotenv
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/produtos")
 
