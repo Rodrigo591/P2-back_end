@@ -22,9 +22,9 @@ class Produto(Base):
 Base.metadata.create_all(bind=engine)
 
 class ProdutoCreate(BaseModel):
-    nome: str = Field(min_length=1)
-    preco: float = Field(gt=0)
-    estoque: int = 0
+    nome: str = Field(..., min_length=1)
+    preco: float = Field(..., gt=0)
+    estoque: int = Field(default=0, ge=0)
     ativo: bool = True
 
 class ProdutoOut(ProdutoCreate):

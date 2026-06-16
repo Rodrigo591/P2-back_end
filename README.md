@@ -178,6 +178,72 @@ pytest -v
 
 ---
 
+## Testes Automatizados
+
+Executar todos os testes:
+
+```bash
+pytest
+```
+
+Executar com detalhes:
+
+```bash
+pytest -v
+```
+
+---
+
+## Resultado Esperado dos Testes
+
+Execução:
+
+```bash
+python -m pytest -v
+```
+
+Exemplo de saída:
+
+```text
+======================== test session starts ========================
+
+collected 13 items
+
+tests/test_produtos.py::test_lista_vazia PASSED
+tests/test_produtos.py::test_criar_produto PASSED
+tests/test_produtos.py::test_listagem PASSED
+tests/test_produtos.py::test_buscar_por_id PASSED
+tests/test_produtos.py::test_buscar_inexistente PASSED
+tests/test_produtos.py::test_deletar PASSED
+tests/test_produtos.py::test_deletar_confirmar PASSED
+tests/test_produtos.py::test_deletar_inexistente PASSED
+tests/test_produtos.py::test_payload_invalido[payload0] PASSED
+tests/test_produtos.py::test_payload_invalido[payload1] PASSED
+tests/test_produtos.py::test_isolamento PASSED
+tests/test_produtos.py::test_atualizar_produto PASSED
+tests/test_produtos.py::test_atualizar_produto_inexistente PASSED
+
+======================== 13 passed ========================
+```
+
+---
+
+## Estratégia de Testes
+
+Os testes utilizam:
+
+* Banco de testes dedicado
+* Fixture `client`
+* Fixture `produto_existente`
+* Isolamento entre execuções
+* Criação e remoção automática das tabelas
+
+### Como o isolamento funciona
+
+O isolamento é garantido pela fixture `client`, que cria as tabelas antes de cada teste utilizando `Base.metadata.create_all()` e remove todas as tabelas ao final utilizando `Base.metadata.drop_all()`. Dessa forma, cada teste executa em um ambiente limpo e independente dos demais.
+
+---
+
 ## Estratégia de Testes
 
 Os testes utilizam:
